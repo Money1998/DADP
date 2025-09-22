@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: my-api-server
+    env: dart
+    plan: free
+    buildCommand: echo "Using Dockerfile"
+    startCommand: ./bin/server
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: DATABASE_URL
+        fromDatabase:
+          name: my-postgres-db
+          property: connectionString
+    dockerfilePath: ./Dockerfile
+
+databases:
+  - name: my-postgres-db
+    plan: free
+    databaseName: mydb
+    user: postgres
