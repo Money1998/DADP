@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: my-api-server
+    name: DADP-Server
     env: docker
     plan: free
     buildCommand: echo "Using Dockerfile"
