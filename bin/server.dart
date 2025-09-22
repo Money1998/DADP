@@ -139,26 +139,27 @@ void main(List<String> args) async {
 }
 
 Future<void> _initDatabase() async {
-  // Get database URL from environment variable (Render requirement)
-  final databaseUrl = Platform.environment['DATABASE_URL'];
-  
-  if (databaseUrl == null) {
-    // Fallback to local development settings
-    _connection = await Connection.open(
-      Endpoint(
-        host: 'localhost',
-        port: 5432,
-        database: 'mydb',
-        username: 'postgres',
-        password: 'rahul123',
-      ),
-      settings: ConnectionSettings(
-        sslMode: SslMode.disable,
-      ),
-    );
-  } else {
+  try {
+    // Get database URL from environment variable (Render requirement)
+    final databaseUrl = Platform.environment['DATABASE_URL'];
+
+    print(' DATABASE_URL: ${databaseUrl != null ? "Found" : "Not found"}');
+
+    if (databaseUrl == null || databaseUrl.isEmpty) {
+      print('❌ DATABASE_URL environment variable not set!');
+      print('❌ Available environment variables:');
+      Platform.environment.forEach((key, value) {
+        if (key.toLowerCase().contains('database') || key.toLowerCase().contains('db')) {
+          print('   $key: $value');
+        }
+      });
+      throw Exception('DATABASE_URL environment variable is required');
+    }
+
     // Parse DATABASE_URL for production (Render format)
     final uri = Uri.parse(databaseUrl);
+    print('🔗 Connecting to database: ${uri.host}:${uri.port}');
+
     _connection = await Connection.open(
       Endpoint(
         host: uri.host,
@@ -171,6 +172,9 @@ Future<void> _initDatabase() async {
         sslMode: SslMode.require,
       ),
     );
+    print('✅ Connected to PostgreSQL database');
+  } catch (e) {
+    print('❌ Database connection failed: $e');
+    rethrow;
   }
-  print('✅ Connected to PostgreSQL database');
 }

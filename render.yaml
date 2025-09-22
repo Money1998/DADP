@@ -1,7 +1,7 @@
 services:
   - type: web
     name: my-api-server
-    env: dart
+    env: docker
     plan: free
     buildCommand: echo "Using Dockerfile"
     startCommand: ./bin/server
