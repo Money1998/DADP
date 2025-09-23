@@ -92,6 +92,22 @@ void main(List<String> args) async {
         );
       }
 
+      // Check if email already exists
+      final existingUser = await _connection.execute(
+        Sql.named('SELECT id FROM users WHERE email = @email'),
+        parameters: {'email': email},
+      );
+
+      if (existingUser.isNotEmpty) {
+        return Response.badRequest(
+          body: jsonEncode({
+            'error': 'Email already exists',
+            'message': 'A user with this email address already exists'
+          }),
+          headers: {'Content-Type': 'application/json'},
+        );
+      }
+
       final results = await _connection.execute(
         Sql.named('INSERT INTO users (name, email) VALUES (@name, @email) RETURNING id'),
         parameters: {'name': name, 'email': email},
