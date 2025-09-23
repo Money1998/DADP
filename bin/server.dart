@@ -156,25 +156,53 @@ Future<void> _initDatabase() async {
       throw Exception('DATABASE_URL environment variable is required');
     }
 
-    // Parse DATABASE_URL for production (Render format)
+    // Parse DATABASE_URL
     final uri = Uri.parse(databaseUrl);
-    print('🔗 Connecting to database: ${uri.host}:${uri.port}');
+    
+    // Extract components with better error handling
+    String host = uri.host;
+    int port = uri.port;
+    String database = uri.pathSegments.isNotEmpty ? uri.pathSegments.first : 'neondb';
+    String username = uri.userInfo.split(':').first;
+    String password = uri.userInfo.split(':').length > 1 ? uri.userInfo.split(':').last : '';
+    
+    // Handle missing port - Neon often doesn't include port in URL
+    if (port == 0) {
+      // Check if this is a Neon URL and use appropriate port
+      if (host.contains('neon.tech') || host.contains('neon')) {
+        port = 5432; // Neon default port
+      } else {
+        port = 5432; // Standard PostgreSQL port
+      }
+    }
+    
+    // Clean up database name
+    if (database.startsWith('/')) {
+      database = database.substring(1);
+    }
+    
+    print('🔗 Connecting to database: $host:$port');
+    print('🔗 Database name: $database');
+    print('🔗 Username: $username');
+    print('🔗 SSL Mode: require');
 
     _connection = await Connection.open(
       Endpoint(
-        host: uri.host,
-        port: uri.port,
-        database: uri.pathSegments.isNotEmpty ? uri.pathSegments.first : 'mydb',
-        username: uri.userInfo.split(':').first,
-        password: uri.userInfo.split(':').length > 1 ? uri.userInfo.split(':').last : '',
+        host: host,
+        port: port,
+        database: database,
+        username: username,
+        password: password,
       ),
       settings: ConnectionSettings(
         sslMode: SslMode.require,
+        connectTimeout: Duration(seconds: 30),
       ),
     );
     print('✅ Connected to PostgreSQL database');
   } catch (e) {
     print('❌ Database connection failed: $e');
+    print('❌ Full error details: ${e.toString()}');
     rethrow;
   }
 }
