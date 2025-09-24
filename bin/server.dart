@@ -101,7 +101,7 @@ void main(List<String> args) async {
       if (existingUser.isNotEmpty) {
         return Response.badRequest(
           body: jsonEncode({
-            'error': 'Email already exists',
+            'error': 'Email The already exists',
             'message': 'A user with this email address already exists'
           }),
           headers: {'Content-Type': 'application/json'},
