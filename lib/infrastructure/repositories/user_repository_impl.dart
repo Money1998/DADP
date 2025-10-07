@@ -26,7 +26,7 @@ class UserRepositoryImpl implements UserRepository {
     try {
       final connection = await _getConnection();
       final results = await connection.execute(
-        Sql.named('SELECT * FROM users ORDER BY id'),
+        Sql.named('SELECT * FROM demo_users ORDER BY id'),
       );
       
       return results.map((row) => User(
@@ -45,7 +45,7 @@ class UserRepositoryImpl implements UserRepository {
     try {
       final connection = await _getConnection();
       final results = await connection.execute(
-        Sql.named('SELECT * FROM users WHERE id = @id'),
+        Sql.named('SELECT * FROM demo_users WHERE id = @id'),
         parameters: {'id': id},
       );
 
@@ -70,7 +70,7 @@ class UserRepositoryImpl implements UserRepository {
     try {
       final connection = await _getConnection();
       final results = await connection.execute(
-        Sql.named('INSERT INTO users (name, email) VALUES (@name, @email) RETURNING id'),
+        Sql.named('INSERT INTO demo_users (name, email) VALUES (@name, @email) RETURNING id'),
         parameters: {'name': user.name, 'email': user.email},
       );
 
@@ -87,7 +87,7 @@ class UserRepositoryImpl implements UserRepository {
     try {
       final connection = await _getConnection();
       final results = await connection.execute(
-        Sql.named('SELECT id FROM users WHERE email = @email'),
+        Sql.named('SELECT id FROM demo_users WHERE email = @email'),
         parameters: {'email': email},
       );
 
