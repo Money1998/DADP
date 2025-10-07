@@ -1,12 +1,10 @@
 name: my_api_server
-description: A sample command-line application.
+description: A Clean Architecture Dart backend server.
 version: 1.0.0
-# repository: https://github.com/my_org/my_repo
 
 environment:
   sdk: ^3.9.2
 
-# Add regular dependencies here.
 dependencies:
   path: ^1.9.0
   shelf: ^1.4.2
